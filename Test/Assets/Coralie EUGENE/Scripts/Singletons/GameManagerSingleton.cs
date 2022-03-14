@@ -3,23 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
 public class GameManagerSingleton : MonoBehaviour
 {
     [SerializeField] bool _isPersistent = true;
     [HideInInspector] public static GameManagerSingleton Instance { get { return _instance; } }
     private static GameManagerSingleton _instance;
 
-    [Space(10)]
-    [Header("Android Settings")]
-    public List<Sprite> androidLogoParts;
-    [Space(10)]
-    [Header("Apple Settings")]
-    public List<Sprite> appleLogoParts;
+    [Tooltip("Difficulty represents the number of moves made to randomize the taquin")]
+    public int _difficulty = 10;
+    public int score = 0;
+    public int highScore = 0;
 
-    private List<Sprite> spritesList;
-    [HideInInspector] public Dictionary<TaquinCell, bool> cellIsCorrect = new Dictionary<TaquinCell, bool>();
-
-    public UnityEvent modifiedTaquin;
+    [HideInInspector] public UnityEvent victoryEvent;
 
     void Awake()
     {
@@ -33,56 +30,44 @@ public class GameManagerSingleton : MonoBehaviour
         {
             DontDestroyOnLoad(this.gameObject);
         }
-#if PLATFORM_ANDROID || UNITY_EDITOR
-        spritesList = androidLogoParts;
-#elif UNITY_IOS
-        spritesList = appleLogoParts;
-#endif
+        victoryEvent = new UnityEvent();
 
-        modifiedTaquin = new UnityEvent();
-    }
-
-    void Start()
-    {
-        // check for victory every time a change was made
-
-        modifiedTaquin.AddListener(CheckVictory);
-    }
-
-    private void CheckVictory()
-    {
-        if (AllCellsCorrect())
+        if (!PlayerPrefs.HasKey("score"))
         {
-            // player wins !
+            PlayerPrefs.SetInt("score", 0);
+            highScore = 0;
         }
-    }
-
-    private bool AllCellsCorrect()
-    {
-        // is there one cell that does not have _isCorrect to true ?
-
-        foreach (bool isCorrect in cellIsCorrect.Values)
+        else
         {
-            if (!isCorrect)
-            {
-                return (false);
-            }
+            highScore = PlayerPrefs.GetInt("score");
         }
 
-        // all correct !
-
-        return (true);
     }
-
-
-    // returns matching sprite in dictionnary for given index
-    public Sprite GetSpriteAtIndex(int _id)
+    public void ResolvedTaquin()
     {
-        if (spritesList.Count > _id)
-        {
-            return (spritesList[_id]);
-        }
-        return (null);
+        // add score
+        score += 1000;
+        // generate new Taquin
+        TaquinGameplaySingleton.Instance.mustGenerate = true;
+        victoryEvent.Invoke();
     }
+
+    public void EndGame()
+    {
+        // save score
+        if (score > highScore)
+        {
+            PlayerPrefs.SetInt("score", score);
+            highScore = PlayerPrefs.GetInt("score");
+        }
+        
+        highScore = PlayerPrefs.GetInt("score");
+        // cleaning variables
+
+        score = 0;
+        TaquinGameplaySingleton.Instance.cellIsCorrect.Clear();
+
+    }
+
 
 }

@@ -23,7 +23,12 @@ public class UpdatePreviewImages : MonoBehaviour
         }
 
         // every time player changes a cell, we want to update the preview
-        GameManagerSingleton.Instance.modifiedTaquin.AddListener(UpdatePreview);
+        TaquinGameplaySingleton.Instance.modifiedTaquin.AddListener(UpdatePreview);
+    }
+
+    void OnDestroy()
+    {
+       TaquinGameplaySingleton.Instance.modifiedTaquin.RemoveListener(UpdatePreview);
     }
 
     void UpdatePreview()

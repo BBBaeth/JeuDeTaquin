@@ -108,8 +108,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _currentImage: {fileID: 0}
-  _winningValue: 0
+  _cellValue: 0
   _ImageField: {fileID: 8743746903131582569}
+  _isCorrect: 0
 --- !u!1001 &189676375249253724
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -117,10 +118,20 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 189676376750019774}
     m_Modifications:
+    - target: {fileID: 333946449626153170, guid: 18ee0aa744fc1ff4dae1c428f12b7300,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2603749265319679507, guid: 18ee0aa744fc1ff4dae1c428f12b7300,
         type: 3}
       propertyPath: m_Name
       value: TaquinSpriteCanvasPrefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 2603749265319679507, guid: 18ee0aa744fc1ff4dae1c428f12b7300,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6947920226830593416, guid: 18ee0aa744fc1ff4dae1c428f12b7300,
         type: 3}
