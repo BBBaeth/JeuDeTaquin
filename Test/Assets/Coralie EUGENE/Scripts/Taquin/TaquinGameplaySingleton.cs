@@ -26,6 +26,8 @@ public class TaquinGameplaySingleton : MonoBehaviour
 
     public TaquinCell _selectedCell = null;
 
+    public float _selectedHeight = 0.15f;
+
 
 #region Initialization
 
@@ -102,45 +104,45 @@ public class TaquinGameplaySingleton : MonoBehaviour
     {
          if (Input.touchCount > 0)
          {
-            //foreach (Touch touch in Input.touches)
-            //{
-                Touch touch = Input.touches[0];
-                switch (touch.phase)
-                {
-                    case TouchPhase.Began:
-                        Ray ray = Camera.main.ScreenPointToRay(touch.position);
-                        RaycastHit hit;
-        
-                        if (Physics.Raycast(ray, out hit, 100))
+            Touch touch = Input.touches[0];
+            switch (touch.phase)
+            {
+                case TouchPhase.Began:
+                    Ray ray = Camera.main.ScreenPointToRay(touch.position);
+                    RaycastHit hit;
+    
+                    if (Physics.Raycast(ray, out hit, 100))
+                    {
+                        hit.transform.gameObject.TryGetComponent<TaquinCell>(out TaquinCell _touchedCell);
+                        if (_touchedCell && _touchedCell != _emptyCell)
                         {
-                            hit.transform.gameObject.TryGetComponent<TaquinCell>(out TaquinCell _touchedCell);
-                            if (_touchedCell)
-                            {
-                                _selectedCell = _touchedCell;
-                            }
+                            _selectedCell = _touchedCell;
+                            _selectedCell.IsSelected();
                         }
-                        break;
-                    case TouchPhase.Moved:
-                        break;
-                    case TouchPhase.Ended:
-                        Ray ray2 = Camera.main.ScreenPointToRay(touch.position);
-                        RaycastHit hit2;
-        
-                        if (Physics.Raycast(ray2, out hit2, 100))
+                    }
+                    break;
+                case TouchPhase.Ended:
+                    Ray ray2 = Camera.main.ScreenPointToRay(touch.position);
+                    RaycastHit hit2;
+    
+                    if (Physics.Raycast(ray2, out hit2, 100))
+                    {
+                        hit2.transform.gameObject.TryGetComponent<TaquinCell>(out TaquinCell _touchedCell);
+                        if (_touchedCell != null && _touchedCell == _emptyCell)
                         {
-                            hit2.transform.gameObject.TryGetComponent<TaquinCell>(out TaquinCell _touchedCell);
-                            if (_touchedCell != null && _touchedCell == _emptyCell)
-                            {
-                                SwitchCells(_touchedCell, _selectedCell);
-                                _selectedCell = null;
-                            }
+                            SwitchCells(_touchedCell, _selectedCell);
+                            _selectedCell.IsReleased();
+                            _selectedCell = null;
                         }
-                        break;
-                //}
+                    }
+                    break;
+                default:
+                    break;
             }
          }
          else
          {
+             _selectedCell.IsReleased();
              _selectedCell = null;
          }
     }
@@ -151,12 +153,22 @@ public class TaquinGameplaySingleton : MonoBehaviour
     private void SwitchCells(TaquinCell empty, TaquinCell other)
     {
 
-        // check if possible
-        Sprite backup = empty._currentImage;
-        empty._currentImage = other._currentImage;
-        other._currentImage = backup;
-        _emptyCell = other;
-        modifiedTaquin.Invoke();
+        // check if switch is possible (neighbour cells)
+
+        bool moveUp = empty._cellValue > 2 ? true : false;
+        bool moveDown = empty._cellValue < 6 ? true : false;
+        bool moveLeft = empty._cellValue % 3 == 0 ? false : true;
+        bool moveRight = (empty._cellValue + 1) % 3 == 0 ? false : true;
+
+        if ((empty._cellValue + 3 == other._cellValue && moveDown) || (empty._cellValue - 3 == other._cellValue && moveUp)
+        || (empty._cellValue + 1 == other._cellValue && moveRight) || (empty._cellValue - 1 == other._cellValue && moveLeft))
+        {
+            Sprite backup = empty._currentImage;
+            empty._currentImage = other._currentImage;
+            other._currentImage = backup;
+            _emptyCell = other;
+            modifiedTaquin.Invoke();
+        }
     }   
 
 

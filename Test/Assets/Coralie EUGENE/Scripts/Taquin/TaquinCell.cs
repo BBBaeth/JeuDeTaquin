@@ -5,9 +5,9 @@ using UnityEngine.UI;
 
 public class TaquinCell : MonoBehaviour
 {
-    public Sprite          _currentImage;
+    public Sprite          _currentImage = null;
     [SerializeField]public int   _cellValue;
-    [SerializeField] Image _ImageField;
+    [SerializeField] Image _ImageField = null;
 
     [HideInInspector] public bool _isCorrect = false;
 
@@ -45,6 +45,16 @@ public class TaquinCell : MonoBehaviour
         {
             TaquinGameplaySingleton.Instance.cellIsCorrect[this] = _isCorrect;
         }
+    }
+
+    public void IsSelected()
+    {
+        transform.position = new Vector3(transform.position.x, transform.position.y + TaquinGameplaySingleton.Instance._selectedHeight,transform.position.z);
+    }
+
+    public void IsReleased()
+    {
+        transform.position = new Vector3(transform.position.x, transform.position.y - TaquinGameplaySingleton.Instance._selectedHeight,transform.position.z);
     }
 
     void isEmpty()

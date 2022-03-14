@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class RenderTaquin : MonoBehaviour
 {
-    [SerializeField] float _selectedHeight = 0.15f;
     public List<TaquinCell> cells;
 
 

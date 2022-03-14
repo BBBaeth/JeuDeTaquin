@@ -59,6 +59,7 @@ public class GameManagerSingleton : MonoBehaviour
         {
             PlayerPrefs.SetInt("score", score);
             highScore = PlayerPrefs.GetInt("score");
+            PlayerPrefs.Save();
         }
         
         highScore = PlayerPrefs.GetInt("score");
